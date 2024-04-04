@@ -27,10 +27,10 @@ func TestSumFunctionMatchOriginal(t *testing.T) {
 	}
 	// check length for both result (suppose to match)
 	if len(original) != len(testResult) {
-		t.Error("original and z lengths are not matched.")
+		t.Error("original and z lengths are not matched\t: [", len(original), "!= ", len(testResult), "]")
 		return
 	} else {
-		fmt.Println("original and z lengths are matched.")
+		fmt.Println("original and z lengths are matched\t: [", len(original), "=", len(testResult), "]")
 	}
 	// check values for both result (suppose to match), in case any mistake or misvalue will count as falseCount to calculate percentage
 	var falseCount int
@@ -40,9 +40,9 @@ func TestSumFunctionMatchOriginal(t *testing.T) {
 		}
 	}
 	if falseCount > 0 {
-		t.Error("original and z values are matched only : ", (float64(len(original)-falseCount)/float64(len(original)))*100, "%")
+		t.Error("original and z values are matched only\t: [", (float64(len(original)-falseCount)/float64(len(original)))*100, "% ]")
 		return
 	} else {
-		fmt.Println("original and z values are matched : ", (float64(len(original)-falseCount)/float64(len(original)))*100, "%")
+		fmt.Println("original and z values are matched\t: [", (float64(len(original)-falseCount)/float64(len(original)))*100, "% ]")
 	}
 }

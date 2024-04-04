@@ -35,6 +35,8 @@ func main() {
 func sum(x, y []int) []int {
 	// fyi 1: I tried both ways, a lot of workers -> it got low latency but high memory usage (my computer automatically restart once I tried kub hah), so I picked the few sizes of workers instead kub (a bit more latency, but low memory usage which also computer not crashed kub)
 	// fyi 2: calculates time which it will perform as On, (workers)O^((len(x)/workers)*len(y))
+	// fyi 3: I had tried once without waiting group and it run correctly (which if there was a hidden test data, It should not survived a large amount of data), which I assume that the workers  complete(go routine) before the main func end (even the sum func return to main).
+	//        (I need to make sure for all workers done their works before return to main, so added waiting group for safety purpose -> a bit more latency increased (1 - 10 to 50 - 80))
 	// create large container due to all of elements x will multiply with all of elements y. (the length must be len(x) * len(y) kub)
 	var z []int = make([]int, len(x)*len(y))
 	// declare a waiting group for waiting action that will be performed in go func (go routine) kub
