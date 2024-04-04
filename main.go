@@ -34,7 +34,7 @@ func main() {
 // TODO edit here only
 func sum(x, y []int) []int {
 	// fyi 1: I tried both ways, a lot of workers -> it got low latency but high memory usage (my computer automatically restart once I tried kub hah), so I picked the few sizes of workers instead kub (a bit more latency, but low memory usage which also computer not crashed kub)
-	// fyi 2: calculates time which it will perform as On, (workers)O^((len(x)/workers)*len(y))
+	// fyi 2: Calculates time which it will perform as On, (workers)O^((len(x)/workers)*len(y))
 	// fyi 3: I had tried once without waiting group and it run correctly (which if there was a hidden test data, It should not survived a large amount of data), which I assume that the workers  complete(go routine) before the main func end (even the sum func return to main).
 	//        (I need to make sure for all workers done their works before return to main, so added waiting group for safety purpose -> a bit more latency increased (1 - 10 to 50 - 80))
 	// create large container due to all of elements x will multiply with all of elements y. (the length must be len(x) * len(y) kub)
@@ -47,30 +47,30 @@ func sum(x, y []int) []int {
 	// batch size per round
 	var batchSize int = len(x) / workers
 	// perform action of go func (go routine) in all workers here kub
-	var start, end int
+	var xStart, xEnd int
 	for i := 0; i < workers; i++ {
 		// pick start and end for the batch (ex : 0 -> 1000, 1000 -> 2000) [reminder : when inside loop working, I used < to prevent duplicate likes 0 -> 999, 1000 -> 1999]
-		start = i * batchSize
-		end = start + batchSize
+		xStart = i * batchSize
+		xEnd = xStart + batchSize
 		// start worker
-		go func(start, end int) {
+		go func(start, xEnd int) {
 			// defer means when go func ended performing action, it will trigger the waiting group to be "done", which will trigger the outside to continue action from "wait" state kub
 			defer wg.Done()
-			// index for order in z, starts like 0*batchSize (ex : 0*1000 -> start 0, 1*1000 -> start 1000)
-			var zIndex int = start * len(x)
+			// index for order in z, starts like round*batchSize (ex : 0*1000 -> start 0, 1*1000 -> start 1000)
+			var zIndex = start * len(x)
 			// start 1st loop for running x value (which are only x values in the batch)
-			for j := start; j < end; j++ {
+			for xIndex := start; xIndex < xEnd; xIndex++ {
 				// start 2nd loop for running y value (which are all y values)
 				for _, yValue := range y {
 					// sum up values and store in z
-					z[zIndex] = x[j] + yValue
+					z[zIndex] = x[xIndex] + yValue
 					// moving to next index
 					zIndex++
 				}
 			}
-		}(start, end)
+		}(xStart, xEnd)
 	}
-	// told waiting group to wait for all the workers to done there job before return to main
+	// told waiting group to wait for all the workers to done there job before return to main (from the original x and y size maybe not worried, but for some hidden test data with large amount maybe needed)
 	wg.Wait()
 	return z
 }
